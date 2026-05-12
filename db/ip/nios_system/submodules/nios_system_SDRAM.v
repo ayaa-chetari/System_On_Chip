@@ -18,7 +18,7 @@
 // altera message_level Level1 
 // altera message_off 10034 10035 10036 10037 10230 10240 10030 
 
-module nios_system_SDRAM_input_efifo_module (
+module nios_system_sdram_input_efifo_module (
                                               // inputs:
                                                clk,
                                                rd,
@@ -39,22 +39,22 @@ module nios_system_SDRAM_input_efifo_module (
   output           almost_full;
   output           empty;
   output           full;
-  output  [ 42: 0] rd_data;
+  output  [ 40: 0] rd_data;
   input            clk;
   input            rd;
   input            reset_n;
   input            wr;
-  input   [ 42: 0] wr_data;
+  input   [ 40: 0] wr_data;
 
   wire             almost_empty;
   wire             almost_full;
   wire             empty;
   reg     [  1: 0] entries;
-  reg     [ 42: 0] entry_0;
-  reg     [ 42: 0] entry_1;
+  reg     [ 40: 0] entry_0;
+  reg     [ 40: 0] entry_1;
   wire             full;
   reg              rd_address;
-  reg     [ 42: 0] rd_data;
+  reg     [ 40: 0] rd_data;
   wire    [  1: 0] rdwr;
   reg              wr_address;
   assign rdwr = {rd, wr};
@@ -155,7 +155,7 @@ endmodule
 // altera message_level Level1 
 // altera message_off 10034 10035 10036 10037 10230 10240 10030 
 
-module nios_system_SDRAM (
+module nios_system_sdram (
                            // inputs:
                             az_addr,
                             az_be_n,
@@ -185,7 +185,7 @@ module nios_system_SDRAM (
   output  [ 15: 0] za_data;
   output           za_valid;
   output           za_waitrequest;
-  output  [ 12: 0] zs_addr;
+  output  [ 11: 0] zs_addr;
   output  [  1: 0] zs_ba;
   output           zs_cas_n;
   output           zs_cke;
@@ -194,7 +194,7 @@ module nios_system_SDRAM (
   output  [  1: 0] zs_dqm;
   output           zs_ras_n;
   output           zs_we_n;
-  input   [ 23: 0] az_addr;
+  input   [ 21: 0] az_addr;
   input   [  1: 0] az_be_n;
   input            az_cs;
   input   [ 15: 0] az_data;
@@ -205,7 +205,7 @@ module nios_system_SDRAM (
 
   wire    [ 23: 0] CODE;
   reg              ack_refresh_request;
-  reg     [ 23: 0] active_addr;
+  reg     [ 21: 0] active_addr;
   wire    [  1: 0] active_bank;
   reg              active_cs_n;
   reg     [ 15: 0] active_data;
@@ -214,14 +214,14 @@ module nios_system_SDRAM (
   wire             almost_empty;
   wire             almost_full;
   wire             bank_match;
-  wire    [  8: 0] cas_addr;
+  wire    [  7: 0] cas_addr;
   wire             clk_en;
   wire    [  3: 0] cmd_all;
   wire    [  2: 0] cmd_code;
   wire             cs_n;
   wire             csn_decode;
   wire             csn_match;
-  wire    [ 23: 0] f_addr;
+  wire    [ 21: 0] f_addr;
   wire    [  1: 0] f_bank;
   wire             f_cs_n;
   wire    [ 15: 0] f_data;
@@ -230,15 +230,15 @@ module nios_system_SDRAM (
   reg              f_pop;
   wire             f_rnw;
   wire             f_select;
-  wire    [ 42: 0] fifo_read_data;
-  reg     [ 12: 0] i_addr;
+  wire    [ 40: 0] fifo_read_data;
+  reg     [ 11: 0] i_addr;
   reg     [  3: 0] i_cmd;
   reg     [  2: 0] i_count;
   reg     [  2: 0] i_next;
   reg     [  2: 0] i_refs;
   reg     [  2: 0] i_state;
   reg              init_done;
-  reg     [ 12: 0] m_addr /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON"  */;
+  reg     [ 11: 0] m_addr /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON"  */;
   reg     [  1: 0] m_bank /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON"  */;
   reg     [  3: 0] m_cmd /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON"  */;
   reg     [  2: 0] m_count;
@@ -259,7 +259,7 @@ module nios_system_SDRAM (
   reg     [ 15: 0] za_data /* synthesis ALTERA_ATTRIBUTE = "FAST_INPUT_REGISTER=ON"  */;
   reg              za_valid;
   wire             za_waitrequest;
-  wire    [ 12: 0] zs_addr;
+  wire    [ 11: 0] zs_addr;
   wire    [  1: 0] zs_ba;
   wire             zs_cas_n;
   wire             zs_cke;
@@ -281,7 +281,7 @@ module nios_system_SDRAM (
   assign cs_n = f_select ? f_cs_n : active_cs_n;
   assign csn_decode = cs_n;
   assign {f_rnw, f_addr, f_dqm, f_data} = fifo_read_data;
-  nios_system_SDRAM_input_efifo_module the_nios_system_SDRAM_input_efifo_module
+  nios_system_sdram_input_efifo_module the_nios_system_sdram_input_efifo_module
     (
       .almost_empty (almost_empty),
       .almost_full  (almost_full),
@@ -295,7 +295,7 @@ module nios_system_SDRAM (
       .wr_data      ({az_wr_n, az_addr, az_wr_n ? 2'b0 : az_be_n, az_data})
     );
 
-  assign f_bank = {f_addr[23],f_addr[9]};
+  assign f_bank = {f_addr[21],f_addr[8]};
   // Refresh/init counter.
   always @(posedge clk or negedge reset_n)
     begin
@@ -346,12 +346,12 @@ module nios_system_SDRAM (
           i_state <= 3'b000;
           i_next <= 3'b000;
           i_cmd <= 4'b1111;
-          i_addr <= {13{1'b1}};
+          i_addr <= {12{1'b1}};
           i_count <= {3{1'b0}};
         end
       else 
         begin
-          i_addr <= {13{1'b1}};
+          i_addr <= {12{1'b1}};
           case (i_state) // synthesis parallel_case full_case
           
               3'b000: begin
@@ -397,7 +397,7 @@ module nios_system_SDRAM (
               3'b111: begin
                   i_state <= 3'b011;
                   i_cmd <= {{1{1'b0}},3'h0};
-                  i_addr <= {{3{1'b0}},1'b0,2'b00,3'h3,4'h0};
+                  i_addr <= {{2{1'b0}},1'b0,2'b00,3'h3,4'h0};
                   i_count <= 4;
                   i_next <= 3'b101;
               end // 3'b111 
@@ -411,13 +411,13 @@ module nios_system_SDRAM (
     end
 
 
-  assign active_bank = {active_addr[23],active_addr[9]};
+  assign active_bank = {active_addr[21],active_addr[8]};
   assign csn_match = active_cs_n == f_cs_n;
   assign rnw_match = active_rnw == f_rnw;
   assign bank_match = active_bank == f_bank;
-  assign row_match = {active_addr[22 : 10]} == {f_addr[22 : 10]};
+  assign row_match = {active_addr[20 : 9]} == {f_addr[20 : 9]};
   assign pending = csn_match && rnw_match && bank_match && row_match && !f_empty;
-  assign cas_addr = f_select ? { {4{1'b0}},f_addr[8 : 0] } : { {4{1'b0}},active_addr[8 : 0] };
+  assign cas_addr = f_select ? { {4{1'b0}},f_addr[7 : 0] } : { {4{1'b0}},active_addr[7 : 0] };
   // **** Main FSM ****
   always @(posedge clk or negedge reset_n)
     begin
@@ -427,7 +427,7 @@ module nios_system_SDRAM (
           m_next <= 9'b000000001;
           m_cmd <= 4'b1111;
           m_bank <= 2'b00;
-          m_addr <= 13'b0000000000000;
+          m_addr <= 12'b000000000000;
           m_data <= 16'b0000000000000000;
           m_dqm <= 2'b00;
           m_count <= 3'b000;
@@ -483,7 +483,7 @@ module nios_system_SDRAM (
                   m_state <= 9'b000000100;
                   m_cmd <= {csn_decode,3'h3};
                   m_bank <= active_bank;
-                  m_addr <= active_addr[22 : 10];
+                  m_addr <= active_addr[20 : 9];
                   m_data <= active_data;
                   m_dqm <= active_dqm;
                   m_count <= 1;
@@ -590,7 +590,7 @@ module nios_system_SDRAM (
           
               9'b001000000: begin
                   m_state <= 9'b000000100;
-                  m_addr <= {13{1'b1}};
+                  m_addr <= {12{1'b1}};
                   // precharge all if arf, else precharge csn_decode
                   if (refresh_request)
                       m_cmd <= {{1{1'b0}},3'h2};

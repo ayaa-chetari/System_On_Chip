@@ -18,7 +18,7 @@
 // altera message_level Level1 
 // altera message_off 10034 10035 10036 10037 10230 10240 10030 
 
-module nios_system_CPU_oci_test_bench (
+module nios_system_cpu_oci_test_bench (
                                         // inputs:
                                          dct_buffer,
                                          dct_count,

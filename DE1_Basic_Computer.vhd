@@ -3,31 +3,20 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.ALL;
 
 ENTITY DE1_Basic_Computer IS
-
--------------------------------------------------------------------------------
---                             Port Declarations
--------------------------------------------------------------------------------
 PORT (
-    -- Inputs
     CLOCK_50 : IN STD_LOGIC;
     CLOCK_27 : IN STD_LOGIC;
     KEY      : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
     SW       : IN STD_LOGIC_VECTOR (9 DOWNTO 0);
 
-    -- Communication
     UART_RXD : IN STD_LOGIC;
 
-    -- Bidirectionals
     GPIO_0 : INOUT STD_LOGIC_VECTOR (35 DOWNTO 0);
     GPIO_1 : INOUT STD_LOGIC_VECTOR (35 DOWNTO 0);
 
-    -- SRAM
     SRAM_DQ : INOUT STD_LOGIC_VECTOR (15 DOWNTO 0);
-
-    -- SDRAM
     DRAM_DQ : INOUT STD_LOGIC_VECTOR (15 DOWNTO 0);
 
-    -- Outputs
     LEDG : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
     LEDR : OUT STD_LOGIC_VECTOR (9 DOWNTO 0);
 
@@ -36,7 +25,6 @@ PORT (
     HEX2 : OUT STD_LOGIC_VECTOR (0 TO 6);
     HEX3 : OUT STD_LOGIC_VECTOR (0 TO 6);
 
-    -- SRAM
     SRAM_ADDR : OUT STD_LOGIC_VECTOR (17 DOWNTO 0);
     SRAM_CE_N : OUT STD_LOGIC;
     SRAM_WE_N : OUT STD_LOGIC;
@@ -44,10 +32,8 @@ PORT (
     SRAM_UB_N : OUT STD_LOGIC;
     SRAM_LB_N : OUT STD_LOGIC;
 
-    -- UART
     UART_TXD : OUT STD_LOGIC;
 
-    -- SDRAM
     DRAM_ADDR  : OUT STD_LOGIC_VECTOR (11 DOWNTO 0);
     DRAM_BA_1  : BUFFER STD_LOGIC;
     DRAM_BA_0  : BUFFER STD_LOGIC;
@@ -60,18 +46,9 @@ PORT (
     DRAM_UDQM  : BUFFER STD_LOGIC;
     DRAM_LDQM  : BUFFER STD_LOGIC
 );
-
 END DE1_Basic_Computer;
 
--------------------------------------------------------------------------------
--- Architecture
--------------------------------------------------------------------------------
-
 ARCHITECTURE DE1_Basic_Computer_rtl OF DE1_Basic_Computer IS
-
--------------------------------------------------------------------------------
--- Components
--------------------------------------------------------------------------------
 
 COMPONENT nios_system
     PORT (
@@ -148,7 +125,10 @@ COMPONENT nios_system
             OUT STD_LOGIC;
 
         zs_we_n_from_the_sdram :
-            OUT STD_LOGIC
+            OUT STD_LOGIC;
+
+        to_hex_export :
+            OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
     );
 END COMPONENT;
 
@@ -167,35 +147,20 @@ COMPONENT hex7seg
     );
 END COMPONENT;
 
--------------------------------------------------------------------------------
--- Signals
--------------------------------------------------------------------------------
-
 SIGNAL system_clock : STD_LOGIC;
 
 SIGNAL BA  : STD_LOGIC_VECTOR(1 DOWNTO 0);
 SIGNAL DQM : STD_LOGIC_VECTOR(1 DOWNTO 0);
 
-SIGNAL hex0_data : STD_LOGIC_VECTOR(3 DOWNTO 0);
-SIGNAL hex1_data : STD_LOGIC_VECTOR(3 DOWNTO 0);
-SIGNAL hex2_data : STD_LOGIC_VECTOR(3 DOWNTO 0);
-SIGNAL hex3_data : STD_LOGIC_VECTOR(3 DOWNTO 0);
+SIGNAL to_HEX : STD_LOGIC_VECTOR(15 DOWNTO 0);
 
 BEGIN
-
--------------------------------------------------------------------------------
--- SDRAM Signals
--------------------------------------------------------------------------------
 
 DRAM_BA_1 <= BA(1);
 DRAM_BA_0 <= BA(0);
 
 DRAM_UDQM <= DQM(1);
 DRAM_LDQM <= DQM(0);
-
--------------------------------------------------------------------------------
--- GPIO High Impedance
--------------------------------------------------------------------------------
 
 GPIO_0(0)  <= 'Z';
 GPIO_0(2)  <= 'Z';
@@ -207,18 +172,12 @@ GPIO_1(2)  <= 'Z';
 GPIO_1(16) <= 'Z';
 GPIO_1(18) <= 'Z';
 
--------------------------------------------------------------------------------
--- Nios II System
--------------------------------------------------------------------------------
-
 NiosII : nios_system
 PORT MAP(
-
     clk      => system_clock,
     reset_n  => KEY(0),
 
     SW_to_the_Slider_switches => SW,
-
     KEY_to_the_Pushbuttons => (KEY(3 DOWNTO 1) & "1"),
 
     GPIO_0_to_and_from_the_Expansion_JP1(0)
@@ -246,7 +205,6 @@ PORT MAP(
         => GPIO_1(35 DOWNTO 19),
 
     LEDG_from_the_Green_LEDs => LEDG,
-
     LEDR_from_the_Red_LEDs => LEDR,
 
     SRAM_ADDR_from_the_SRAM => SRAM_ADDR,
@@ -268,12 +226,10 @@ PORT MAP(
     zs_dq_to_and_from_the_sdram => DRAM_DQ,
     zs_dqm_from_the_sdram => DQM,
     zs_ras_n_from_the_sdram => DRAM_RAS_N,
-    zs_we_n_from_the_sdram => DRAM_WE_N
-);
+    zs_we_n_from_the_sdram => DRAM_WE_N,
 
--------------------------------------------------------------------------------
--- PLL
--------------------------------------------------------------------------------
+    to_hex_export => to_HEX
+);
 
 neg_3ns : sdram_pll
 PORT MAP (
@@ -282,36 +238,27 @@ PORT MAP (
     c1     => system_clock
 );
 
--------------------------------------------------------------------------------
--- HEX Displays
--------------------------------------------------------------------------------
-
-hex0_data <= SW(3 DOWNTO 0);
-hex1_data <= SW(7 DOWNTO 4);
-hex2_data <= "0000";
-hex3_data <= "0000";
-
 H0 : hex7seg
 PORT MAP (
-    hex     => hex0_data,
+    hex     => to_HEX(3 DOWNTO 0),
     display => HEX0
 );
 
 H1 : hex7seg
 PORT MAP (
-    hex     => hex1_data,
+    hex     => to_HEX(7 DOWNTO 4),
     display => HEX1
 );
 
 H2 : hex7seg
 PORT MAP (
-    hex     => hex2_data,
+    hex     => to_HEX(11 DOWNTO 8),
     display => HEX2
 );
 
 H3 : hex7seg
 PORT MAP (
-    hex     => hex3_data,
+    hex     => to_HEX(15 DOWNTO 12),
     display => HEX3
 );
 

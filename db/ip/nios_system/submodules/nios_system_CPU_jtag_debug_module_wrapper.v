@@ -18,7 +18,7 @@
 // altera message_level Level1 
 // altera message_off 10034 10035 10036 10037 10230 10240 10030 
 
-module nios_system_cpu_jtag_debug_module_wrapper (
+module nios_system_CPU_jtag_debug_module_wrapper (
                                                    // inputs:
                                                     MonDReg,
                                                     break_readreg,
@@ -129,7 +129,7 @@ module nios_system_cpu_jtag_debug_module_wrapper (
   //switch between a regular Nios II or an internally embedded Nios II.
   //For a regular Nios II, sld_mfg_id = 70, sld_type_id = 34.
   //For an internally embedded Nios II, slf_mfg_id = 110, sld_type_id = 135.
-  nios_system_cpu_jtag_debug_module_tck the_nios_system_cpu_jtag_debug_module_tck
+  nios_system_CPU_jtag_debug_module_tck the_nios_system_CPU_jtag_debug_module_tck
     (
       .MonDReg            (MonDReg),
       .break_readreg      (break_readreg),
@@ -164,7 +164,7 @@ module nios_system_cpu_jtag_debug_module_wrapper (
       .vs_uir             (vji_uir)
     );
 
-  nios_system_cpu_jtag_debug_module_sysclk the_nios_system_cpu_jtag_debug_module_sysclk
+  nios_system_CPU_jtag_debug_module_sysclk the_nios_system_CPU_jtag_debug_module_sysclk
     (
       .clk                       (clk),
       .ir_in                     (vji_ir_in),
@@ -203,7 +203,7 @@ module nios_system_cpu_jtag_debug_module_wrapper (
 
 //synthesis translate_on
 //synthesis read_comments_as_HDL on
-//  sld_virtual_jtag_basic nios_system_cpu_jtag_debug_module_phy
+//  sld_virtual_jtag_basic nios_system_CPU_jtag_debug_module_phy
 //    (
 //      .ir_in (vji_ir_in),
 //      .ir_out (vji_ir_out),
@@ -217,15 +217,15 @@ module nios_system_cpu_jtag_debug_module_wrapper (
 //      .virtual_state_uir (vji_uir)
 //    );
 //
-//  defparam nios_system_cpu_jtag_debug_module_phy.sld_auto_instance_index = "YES",
-//           nios_system_cpu_jtag_debug_module_phy.sld_instance_index = 0,
-//           nios_system_cpu_jtag_debug_module_phy.sld_ir_width = 2,
-//           nios_system_cpu_jtag_debug_module_phy.sld_mfg_id = 70,
-//           nios_system_cpu_jtag_debug_module_phy.sld_sim_action = "",
-//           nios_system_cpu_jtag_debug_module_phy.sld_sim_n_scan = 0,
-//           nios_system_cpu_jtag_debug_module_phy.sld_sim_total_length = 0,
-//           nios_system_cpu_jtag_debug_module_phy.sld_type_id = 34,
-//           nios_system_cpu_jtag_debug_module_phy.sld_version = 3;
+//  defparam nios_system_CPU_jtag_debug_module_phy.sld_auto_instance_index = "YES",
+//           nios_system_CPU_jtag_debug_module_phy.sld_instance_index = 0,
+//           nios_system_CPU_jtag_debug_module_phy.sld_ir_width = 2,
+//           nios_system_CPU_jtag_debug_module_phy.sld_mfg_id = 70,
+//           nios_system_CPU_jtag_debug_module_phy.sld_sim_action = "",
+//           nios_system_CPU_jtag_debug_module_phy.sld_sim_n_scan = 0,
+//           nios_system_CPU_jtag_debug_module_phy.sld_sim_total_length = 0,
+//           nios_system_CPU_jtag_debug_module_phy.sld_type_id = 34,
+//           nios_system_CPU_jtag_debug_module_phy.sld_version = 3;
 //
 //synthesis read_comments_as_HDL off
 

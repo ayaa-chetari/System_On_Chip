@@ -1,0 +1,60 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity PWM_avalon_interface is
+    port(
+        clock       : in  std_logic;
+        resetn      : in  std_logic;
+
+        read        : in  std_logic;
+        write       : in  std_logic;
+        chipselect  : in  std_logic;
+
+        writedata   : in  std_logic_vector(31 downto 0);
+        readdata    : out std_logic_vector(31 downto 0);
+
+        byteenable  : in  std_logic_vector(3 downto 0);
+
+        -- sorties PWM
+        Q_export : out std_logic_vector(3 downto 0)
+    );
+end entity;
+
+architecture Structure of PWM_avalon_interface is
+
+    -- registre interne 32 bits
+    signal to_reg, from_reg : std_logic_vector(31 downto 0);
+
+    COMPONENT PWM_generation
+        PORT (
+            clk,reset_n : in std_logic;
+
+            s_writedataR,s_writedataL : in std_logic_vector(13 downto 0);
+
+            dc_motor_p_R,dc_motor_n_R : out std_logic;
+            dc_motor_p_L,dc_motor_n_L : out std_logic
+        );
+    END COMPONENT;
+
+begin
+
+    to_reg <= writedata;
+
+    readdata <= to_reg;
+
+    pwm_inst : PWM_generation
+    port map(
+        clk => clock,
+        reset_n => resetn,
+
+        s_writedataR => to_reg(13 downto 0),
+        s_writedataL => to_reg(27 downto 14),
+
+        dc_motor_p_R => Q_export(0),
+        dc_motor_n_R => Q_export(1),
+        dc_motor_p_L => Q_export(2),
+        dc_motor_n_L => Q_export(3)
+    );
+
+end Structure;

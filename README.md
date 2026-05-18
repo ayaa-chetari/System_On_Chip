@@ -1,247 +1,87 @@
+# Line Follower Robot – FPGA Co-Design
 
+## Description
 
-# Architecture du système Qsys avec composant personnalisé Avalon
+Ce projet porte sur la conception d’un **robot suiveur de ligne** basé sur une architecture de **co-design matériel/logiciel sur FPGA**.  
+Le système a été développé de manière progressive, en plusieurs versions, chaque étape apportant des améliorations fonctionnelles et architecturales.
 
-## 1. Introduction
+La plateforme utilisée est la **DE0-Nano (FPGA Cyclone IV)** avec une **SDRAM de 32 Mo**, en utilisant :
+- **VHDL** pour les blocs matériels temps réel  
+- **C** pour le logiciel embarqué (processeur NIOS II)  
+- **Quartus & Qsys** pour la conception et l’intégration du système  
 
-Cette partie  consiste à intégrer un composant matériel personnalisé dans un système embarqué basé sur un processeur Nios II sur FPGA DE1.
-
-L’objectif principal est de :
-
-- créer un périphérique matériel personnalisé (`reg16`)
-- l’intégrer dans Qsys
-- permettre au processeur Nios II de communiquer avec ce périphérique via le bus Avalon
-- afficher la valeur du registre sur les afficheurs 7 segments de la carte DE1
-
-
+Le robot est équipé de **7 capteurs infrarouges**, d’un **ADC LTC2308** et de deux moteurs commandés par **PWM**.
 
 ---
 
-# 2. Architecture globale du système
+## Objectif
 
-```text
-+--------------------------------------------------------------+
-|                         FPGA DE1                             |
-|                                                              |
-|  +--------------------------------------------------------+  |
-|  |              DE1_Basic_Computer.vhd                   |  |
-|  |                    (Top Level)                        |  |
-|  |                                                        |  |
-|  |   +------------------------------------------------+   |  |
-|  |   |               nios_system                      |   |  |
-|  |   |                  (Qsys)                        |   |  |
-|  |   |                                                |   |  |
-|  |   |    +-------------------------------+           |   |  |
-|  |   |    |          Nios II              |           |   |  |
-|  |   |    +---------------+---------------+           |   |  |
-|  |   |                    | Avalon-MM                |   |  |
-|  |   |                    v                          |   |  |
-|  |   |    +-------------------------------+          |   |  |
-|  |   |    |  reg16_avalon_interface       |          |   |  |
-|  |   |    |                               |          |   |  |
-|  |   |    |       
-|  |   |    |   
-|  |   |    +---------------+---------------+          |   |    |
-|  |   |                    |                          |   |    |
-|  |   |                    v                          |   |    |
-|  |   |                +--------+                    |   |    |
-|  |   |                | reg16  |                    |   |    |
-|  |   |                +--------+                    |   |    |
-|  |   +------------------------------------------------+   |    |
-|  |                      avalon conduit                    |    |
-|  |             +----------------------+                   |    |
-|  |             |      hex7seg         |<------------------+    |
-|  |             +----------------------+                        |
-|  +-------------------------------------------------------------+
-|
-+--------------------------------------------------------------+
-```
+Concevoir un système autonome capable de :
+- détecter une ligne noire,
+- calculer sa position,
+- ajuster la vitesse des moteurs,
+- suivre la ligne en temps réel,
+- gérer la perte de ligne (rotation),
+- réaliser des **aller-retours automatiques**.
 
 ---
 
-# 3. Description des fichiers
+## Architecture du système
 
-| Fichier | Rôle |
-|---|---|
-| `DE1_Basic_Computer.vhd` | Top-level du FPGA |
-| `nios_system.qsys` | Système Qsys contenant le Nios II et les périphériques |
-| `reg16.vhd` | Registre matériel 16 bits |
-| `reg16_avalon_interface.vhd` | Interface Avalon du composant personnalisé |
-| `hex7seg.vhd` | Décodeur pour les afficheurs 7 segments |
+### Partie matérielle (FPGA – VHDL)
+- Lecture des capteurs via ADC (SPI)  
+- Seuillage des signaux  
+- Calcul de la position de la ligne  
+- Automates :
+  - suivi de ligne  
+  - rotation  
+- Génération PWM pour les moteurs  
 
----
+### Partie logicielle (NIOS II – C)
+- Supervision du système  
+- Gestion des états (suivi, rotation, arrêt)  
 
-# 4. Description du composant personnalisé
-
-Le composant personnalisé est constitué de deux blocs :
-
-```text
-+-----------------------------------+
-| reg16_avalon_interface            |
-|                                   |
-|  +-----------------------------+  |
-|  |         reg16              |  |
-|  +-----------------------------+  |
-|                                   |
-+-----------------------------------+
-```
-
-- `reg16` : stockage des données
-- `reg16_avalon_interface` : interface entre le bus Avalon et le registre
-
-Le registre `reg16` ne communique pas directement avec le processeur.
-
-Toute la communication avec le système Qsys passe par `reg16_avalon_interface`.
+### Intégration (Qsys / Avalon)
+- Interconnexion des blocs  
+- Accès à la SDRAM (programme + données)  
+- Communication processeur / périphériques  
 
 ---
 
-# 5. Interfaces Avalon utilisées
+## Évolution du projet
 
-Le composant personnalisé possède deux interfaces Avalon différentes :
-
-| Interface | Type | Rôle |
-|---|---|---|
-| Avalon Memory-Mapped | Avalon-MM | communication avec le processeur Nios II |
-| Avalon Conduit | Avalon Conduit | exportation des données vers l’extérieur |
-
-
-
----
-
-# 6. Interface Avalon-MM
-
-## Rôle
-
-L’interface Avalon-MM permet au processeur Nios II :
-
-- d’écrire dans le registre
-- de lire le contenu du registre
-
-Le composant agit comme un **slave Avalon-MM**.
-
-Le processeur Nios II agit comme un **master Avalon-MM**.
+- **V2_SDRAM** : architecture de base (NIOS II + SDRAM + PIO)  
+- **V3_caract** : caractérisation des moteurs  
+- **V4_capt_sol_seuil** : acquisition et seuillage des capteurs  
+- **V4_cpteur_sol** : calcul de la position de la ligne  
+- **V5_suivi_ligne** : implémentation du suivi de ligne  
+- **V6_rotation_ligne** : gestion de la rotation  
+- **V7_aller_retour** : comportement complet avec supervision  
 
 ---
 
-## Signaux Avalon-MM utilisés
+## Principe de fonctionnement
 
-Dans `reg16_avalon_interface.vhd`, les signaux utilisés sont :
-
-| Signal | Rôle |
-|---|---|
-| `clock` | horloge système |
-| `resetn` | reset actif à 0 |
-| `write` | demande d’écriture |
-| `read` | demande de lecture |
-| `chipselect` | sélection du composant |
-| `writedata` | données envoyées par le Nios II |
-| `readdata` | données retournées au Nios II |
-| `byteenable` | validation des données |
+1. Les capteurs IR détectent la ligne  
+2. L’ADC envoie les données au FPGA  
+3. La position de la ligne est calculée  
+4. Les moteurs sont commandés par PWM :
+   - vitesses égales → ligne droite  
+   - vitesses différentes → correction  
+5. Si la ligne est perdue :
+   - rotation → recentrage → reprise  
 
 ---
 
-# 7. Interface Avalon Conduit
+## Technologies utilisées
 
-## Rôle
-
-L’interface Conduit permet d’exporter des signaux hors du système Qsys.
-
-Dans cette partie , elle sert à envoyer la valeur du registre vers les afficheurs 7 segments.
-
----
-
-## Signal utilisé
-
-Le signal Conduit utilisé est :
-
-Q_export
-```
-
-Ce signal contient la valeur du registre 16 bits.
-
----
-
-# 8. Communication complète dans le système
-
-## Écriture depuis le processeur
-
-Le programme C exécute :
-
-```c
-IOWR(BASE,0,0x1234);
-```
-
-Flux matériel :
-
-```text
-Nios II
-   |
-Avalon-MM
-   |
-reg16_avalon_interface
-   |
-reg16
-```
-
----
-
-## Affichage sur les afficheurs HEX
-
-La valeur du registre est ensuite exportée :
-
-```text
-reg16
-   |
-Q_export
-   |
-hex7seg
-   |
-HEX0..HEX3
-```
+- FPGA **DE0-Nano (Cyclone IV)**
+- **Quartus / Qsys**
+- **VHDL**
+- **C (NIOS II)**
+- ADC **LTC2308**
+- PWM & moteurs DC  
 
 ---
 
 
-
----
-
-# 10. Comment l’architecture répond à l’objectif
-
-Cette architecture répond exactement aux exigences du tutoriel :
-
-| Exigence | Réponse dans l’architecture |
-|---|---|
-| Création d’un composant personnalisé | `reg16.vhd` |
-| Interface Avalon-MM | `reg16_avalon_interface.vhd` |
-| Communication avec Nios II | bus Avalon-MM |
-| Exportation externe | interface Conduit `Q_export` |
-| Affichage sur FPGA | `hex7seg.vhd` |
-| Intégration dans Qsys | `nios_system.qsys` |
-
-Le processeur Nios II peut accéder au registre comme à une zone mémoire grâce au principe du **Memory-Mapped I/O**.
-
-L’interface Avalon-MM assure la communication entre le logiciel et le matériel.
-
-L’interface Avalon Conduit permet d’exporter la valeur du registre hors du système Qsys afin de l’utiliser dans le top-level FPGA.
-
-Cette architecture montre comment intégrer un composant matériel personnalisé dans un système embarqué FPGA basé sur Qsys.
-
----
-
-# 11. Conclusion
-
-Cette architecture met en œuvre un système embarqué FPGA complet basé sur :
-
-- un processeur Nios II
-- un composant matériel personnalisé
-- le protocole Avalon-MM
-- une interface Conduit
-
-Le composant personnalisé possède deux interfaces Avalon :
-
-1. une interface Avalon-MM pour communiquer avec le Nios II
-2. une interface Avalon Conduit pour exporter les données vers l’extérieur
-
-Le processeur écrit dans le registre via le bus Avalon-MM et la valeur est affichée sur les afficheurs 7 segments grâce au signal `Q_export`.
-
-Cette architecture constitue un exemple complet d’intégration d’un IP personnalisé dans un système Qsys.

@@ -1,15 +1,15 @@
-Fitter Status : Successful - Mon Feb 09 12:13:42 2026
+Fitter Status : Successful - Mon May 18 12:02:19 2026
 Quartus II 32-bit Version : 13.0.1 Build 232 06/12/2013 SP 1 SJ Full Version
 Revision Name : sysRobot
 Top-level Entity Name : sysRobot
 Family : Cyclone IV E
 Device : EP4CE22F17C6
 Timing Models : Final
-Total logic elements : 2,375 / 22,320 ( 11 % )
-    Total combinational functions : 2,169 / 22,320 ( 10 % )
-    Dedicated logic registers : 1,433 / 22,320 ( 6 % )
-Total registers : 1502
-Total pins : 49 / 154 ( 32 % )
+Total logic elements : 2,432 / 22,320 ( 11 % )
+    Total combinational functions : 2,225 / 22,320 ( 10 % )
+    Dedicated logic registers : 1,470 / 22,320 ( 7 % )
+Total registers : 1539
+Total pins : 53 / 154 ( 34 % )
 Total virtual pins : 0
 Total memory bits : 44,032 / 608,256 ( 7 % )
 Embedded Multiplier 9-bit elements : 0 / 132 ( 0 % )

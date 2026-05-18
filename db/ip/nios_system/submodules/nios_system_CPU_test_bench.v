@@ -18,7 +18,7 @@
 // altera message_level Level1 
 // altera message_off 10034 10035 10036 10037 10230 10240 10030 
 
-module nios_system_cpu_test_bench (
+module nios_system_CPU_test_bench (
                                     // inputs:
                                      D_iw,
                                      D_iw_op,
@@ -61,7 +61,7 @@ module nios_system_cpu_test_bench (
   input   [  5: 0] D_iw_opx;
   input            D_valid;
   input            E_valid;
-  input   [ 27: 0] F_pcb;
+  input   [ 26: 0] F_pcb;
   input            F_valid;
   input            R_ctrl_ld;
   input            R_ctrl_ld_non_io;
@@ -72,11 +72,11 @@ module nios_system_cpu_test_bench (
   input   [ 31: 0] W_wr_data;
   input   [ 31: 0] av_ld_data_aligned_unfiltered;
   input            clk;
-  input   [ 28: 0] d_address;
+  input   [ 26: 0] d_address;
   input   [  3: 0] d_byteenable;
   input            d_read;
   input            d_write_nxt;
-  input   [ 27: 0] i_address;
+  input   [ 26: 0] i_address;
   input            i_read;
   input   [ 31: 0] i_readdata;
   input            i_waitrequest;
@@ -457,7 +457,7 @@ module nios_system_cpu_test_bench (
       if (reset_n)
           if (^(F_valid) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/F_valid is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/F_valid is 'x'\n", $time);
               $stop;
             end
     end
@@ -468,7 +468,7 @@ module nios_system_cpu_test_bench (
       if (reset_n)
           if (^(D_valid) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/D_valid is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/D_valid is 'x'\n", $time);
               $stop;
             end
     end
@@ -479,7 +479,7 @@ module nios_system_cpu_test_bench (
       if (reset_n)
           if (^(E_valid) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/E_valid is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/E_valid is 'x'\n", $time);
               $stop;
             end
     end
@@ -490,7 +490,7 @@ module nios_system_cpu_test_bench (
       if (reset_n)
           if (^(W_valid) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/W_valid is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/W_valid is 'x'\n", $time);
               $stop;
             end
     end
@@ -504,7 +504,7 @@ module nios_system_cpu_test_bench (
       else if (W_valid)
           if (^(R_wr_dst_reg) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/R_wr_dst_reg is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/R_wr_dst_reg is 'x'\n", $time);
               $stop;
             end
     end
@@ -518,7 +518,7 @@ module nios_system_cpu_test_bench (
       else if (W_valid & R_wr_dst_reg)
           if (^(W_wr_data) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/W_wr_data is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/W_wr_data is 'x'\n", $time);
               $stop;
             end
     end
@@ -532,7 +532,7 @@ module nios_system_cpu_test_bench (
       else if (W_valid & R_wr_dst_reg)
           if (^(R_dst_regnum) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/R_dst_regnum is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/R_dst_regnum is 'x'\n", $time);
               $stop;
             end
     end
@@ -543,7 +543,7 @@ module nios_system_cpu_test_bench (
       if (reset_n)
           if (^(d_write) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/d_write is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/d_write is 'x'\n", $time);
               $stop;
             end
     end
@@ -557,7 +557,7 @@ module nios_system_cpu_test_bench (
       else if (d_write)
           if (^(d_byteenable) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/d_byteenable is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/d_byteenable is 'x'\n", $time);
               $stop;
             end
     end
@@ -571,7 +571,7 @@ module nios_system_cpu_test_bench (
       else if (d_write | d_read)
           if (^(d_address) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/d_address is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/d_address is 'x'\n", $time);
               $stop;
             end
     end
@@ -582,7 +582,7 @@ module nios_system_cpu_test_bench (
       if (reset_n)
           if (^(d_read) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/d_read is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/d_read is 'x'\n", $time);
               $stop;
             end
     end
@@ -593,7 +593,7 @@ module nios_system_cpu_test_bench (
       if (reset_n)
           if (^(i_read) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/i_read is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/i_read is 'x'\n", $time);
               $stop;
             end
     end
@@ -607,7 +607,7 @@ module nios_system_cpu_test_bench (
       else if (i_read)
           if (^(i_address) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/i_address is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/i_address is 'x'\n", $time);
               $stop;
             end
     end
@@ -621,7 +621,7 @@ module nios_system_cpu_test_bench (
       else if (i_read & ~i_waitrequest)
           if (^(i_readdata) === 1'bx)
             begin
-              $write("%0d ns: ERROR: nios_system_cpu_test_bench/i_readdata is 'x'\n", $time);
+              $write("%0d ns: ERROR: nios_system_CPU_test_bench/i_readdata is 'x'\n", $time);
               $stop;
             end
     end
@@ -635,7 +635,7 @@ module nios_system_cpu_test_bench (
       else if (W_valid & R_ctrl_ld)
           if (^(av_ld_data_aligned_unfiltered) === 1'bx)
             begin
-              $write("%0d ns: WARNING: nios_system_cpu_test_bench/av_ld_data_aligned_unfiltered is 'x'\n", $time);
+              $write("%0d ns: WARNING: nios_system_CPU_test_bench/av_ld_data_aligned_unfiltered is 'x'\n", $time);
             end
     end
 
@@ -648,7 +648,7 @@ module nios_system_cpu_test_bench (
       else if (W_valid & R_wr_dst_reg)
           if (^(W_wr_data) === 1'bx)
             begin
-              $write("%0d ns: WARNING: nios_system_cpu_test_bench/W_wr_data is 'x'\n", $time);
+              $write("%0d ns: WARNING: nios_system_CPU_test_bench/W_wr_data is 'x'\n", $time);
             end
     end
 
